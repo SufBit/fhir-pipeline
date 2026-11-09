@@ -1,0 +1,1 @@
+Pipeline that pulls FHIR patient data, cleans it, stores it, and serves it through a REST API.
