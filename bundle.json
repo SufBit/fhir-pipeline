@@ -1,0 +1,34 @@
+{
+  "resourceType": "Patient",
+  "id": "nhanes-120412",
+  "meta": {
+    "versionId": "1",
+    "lastUpdated": "2026-09-25T11:17:12.302-04:00",
+    "source": "#W81Ua3cMHYJbIEsf",
+    "tag": [
+      {
+        "system": "http://karyon.bio/fhir/CodeSystem/data-provenance",
+        "code": "synthetic-identity",
+        "display": "Real NHANES measurements; name, MRN and birth date are generated"
+      }
+    ]
+  },
+  "identifier": [
+    {
+      "system": "http://karyon.bio/fhir/sid/nhanes-seqn",
+      "value": "120412"
+    }
+  ],
+  "active": true,
+  "name": [
+    {
+      "use": "official",
+      "family": "Whitfield",
+      "given": [
+        "Horace"
+      ]
+    }
+  ],
+  "gender": "male",
+  "birthDate": "1973-02-28"
+}
