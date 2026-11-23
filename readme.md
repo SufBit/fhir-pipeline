@@ -1,25 +1,44 @@
 # FHIR Patient Pipeline
 
-The project uses FHIR end points that read and store the data into an SQLite database, we call the database using APIs to get patinet records
+A pipeline that fetches FHIR patient data from a public test server, cleans it, stores it in SQLite, and serves it through a REST API.
 
-# About The Data
+## About the data
 
-This is test patient data from a public server
+The data comes from the public HAPI FHIR test server. Patient identities (name, record number, birth date) are synthetic, and the measurements come from a public health survey (NHANES). No real patient data is used.
 
-# How to run it 
+## How it works
 
-pip install -r requirements.txt - Installs requirements
-python main.py it runs the pipeline, fetch, clean, store in fhir.db
-uvicorn api:app --reload, starts a local server and auto restarts when changes are made
-pytest - runs all test
-docker build -t fhir-api - Builds the docker image 
-docker run -p 8000:8000 fhir-api starts the container from the image
+```mermaid
+flowchart LR
+  A[HAPI FHIR test server] --> B[fetch.py]
+  B --> C[clean.py]
+  C --> D[(fhir.db)]
+  D --> E[api.py / FastAPI]
+```
 
-# API Endpoints
+- `fetch.py` pages through the server's results, with retries.
+- `clean.py` validates each patient and flattens it to `id`, `family_name`, `gender` and `birth_date`.
+- `main.py` runs fetch, clean and store, and prints a summary of how many patients were kept and rejected.
+- `api.py` serves the stored patients.
 
-- /health - Just makes sure api is working
-- /patients - Gets all patients in database
-- /patients/{id} - Gets specific patient with ID
+## How to run it
+
+```bash
+pip install -r requirements.txt       # install dependencies
+python main.py                        # run the pipeline: fetch, clean, store in fhir.db
+uvicorn api:app --reload              # start a local API server (auto-restarts on changes)
+pytest                                # run all tests
+docker build -t fhir-api .            # build the Docker image
+docker run -p 8000:8000 fhir-api      # start the API from the image
+```
+
+The Docker image contains `fhir.db` as it was at build time. To use fresh data, run `python main.py` and rebuild the image.
+
+## API endpoints
+
+- `GET /health`: checks that the API is running.
+- `GET /patients`: returns all patients in the database.
+- `GET /patients/{id}`: returns one patient by id, or a 404 if not found.
 
 ## Design decisions
 
